@@ -1,0 +1,3 @@
+## 2024-06-25 - [Optimize MultiheadAttention with FlashAttention]
+**Learning:** PyTorch's `nn.MultiheadAttention` calculates and returns attention weights by default, which consumes computation and memory. When these weights are explicitly discarded (i.e. unpacked to `_`), we can enable FlashAttention and save resources by setting `need_weights=False`. However, we must be careful not to apply this optimization if downstream components depend on the attention weights (e.g., in reasoning traces).
+**Action:** Always verify if attention weights are genuinely unused downstream before disabling their computation with `need_weights=False` to optimize attention modules safely.
