@@ -356,7 +356,7 @@ class TestDriveServiceOAuth:
             "google_auth_oauthlib.flow": MagicMock(),
             "googleapiclient.discovery": discovery_module,
         }):
-            result = self.m.drive_service(args)
+            self.m.drive_service(args)
 
         mock_creds.refresh.assert_called_once()
 
@@ -388,7 +388,7 @@ class TestDriveServiceOAuth:
             "google_auth_oauthlib.flow": flow_module,
             "googleapiclient.discovery": discovery_module,
         }):
-            result = self.m.drive_service(args)
+            self.m.drive_service(args)
 
         flow_module.InstalledAppFlow.from_client_secrets_file.assert_called_once_with(
             "oauth.json", self.m.DRIVE_SCOPES
@@ -743,12 +743,12 @@ class TestDownloadSynapseAuth:
 API_KEYS 환경변수를 통한 API 키 인증 동작을 검증합니다.
 """
 import os
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 import importlib
 import pytest
 from fastapi.testclient import TestClient
 from api.examples import generate_sample_sensor_data
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 def _classify_body():
