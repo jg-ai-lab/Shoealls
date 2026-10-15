@@ -1,0 +1,3 @@
+## 2024-10-15 - [PyTorch MultiheadAttention Optimization]
+**Learning:** When using PyTorch's `nn.MultiheadAttention`, passing `need_weights=False` prevents unnecessary computation and memory allocation if attention weights are discarded, which enables FlashAttention. However, it should not be applied if weights are explicitly unpacked and used downstream (e.g., returning `None` will break downstream reasoning components).
+**Action:** Always check if the second return value (attention weights) of `nn.MultiheadAttention` is used. If it's discarded (e.g., `attn_out, _ = self.attn(...)`), add `need_weights=False` to improve performance and enable FlashAttention.
