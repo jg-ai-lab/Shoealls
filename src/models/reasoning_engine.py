@@ -126,6 +126,7 @@ class CrossModalEvidenceCollector(nn.Module):
             modality_weights: (B, 3) 모달리티별 기여도
             cross_support: (B, 3) 교차 검증 지지도
         """
+
         B = modality_features[0].size(0)
         D = modality_features[0].size(2)
 
@@ -221,6 +222,7 @@ class DifferentialDiagnosisChain(nn.Module):
             pro_scores: (B, num_classes) 찬성 근거 강도
             con_scores: (B, num_classes) 반대 근거 강도
         """
+
         B = evidence_embedding.size(0)
 
         # 초기 가설: 프로토타입과의 유사도

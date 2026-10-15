@@ -5,6 +5,14 @@
 """
 
 from pathlib import Path
+
+METRIC_KR = {
+    "gait_speed": "보행 속도",
+    "stride_length": "보폭",
+    "cadence": "케이던스",
+    "step_symmetry": "대칭성",
+    "cop_sway": "COP 흔들림",
+}
 from datetime import date
 
 import matplotlib

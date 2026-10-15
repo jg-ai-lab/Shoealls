@@ -245,7 +245,7 @@ class TestDriveServiceServiceAccount:
                 google_oauth2_sa.Credentials.from_service_account_file.return_value = mock_creds
 
                 with patch.dict(sys.modules, {"google.oauth2.service_account": google_oauth2_sa}):
-                    with patch("googleapiclient.discovery.build", return_value=mock_service) as mock_build:
+                    with patch("googleapiclient.discovery.build", return_value=mock_service):
                         # Build the patched environment so drive_service can import
                         with patch.object(sys.modules.get("google.oauth2.service_account", MagicMock()),
                                           "Credentials") as _:
@@ -356,7 +356,7 @@ class TestDriveServiceOAuth:
             "google_auth_oauthlib.flow": MagicMock(),
             "googleapiclient.discovery": discovery_module,
         }):
-            self.m.drive_service(args)
+            result = self.m.drive_service(args)
 
         mock_creds.refresh.assert_called_once()
 
