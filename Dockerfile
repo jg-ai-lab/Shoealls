@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Python 의존성 캐시 레이어
 COPY requirements.txt .
-RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
+RUN pip install --no-cache-dir --prefix=/install 'numpy>=1.26.4,<2' -r requirements.txt
 
 # ── 런타임 스테이지 ──────────────────────────────────────────────────
 FROM python:3.11-slim
