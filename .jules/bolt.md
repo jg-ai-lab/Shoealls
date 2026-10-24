@@ -1,0 +1,3 @@
+## 2026-10-24 - [Disable need_weights in MultiheadAttention]
+**Learning:** By default, PyTorch's `nn.MultiheadAttention` returns both the attention output and the attention weights. If the attention weights are not needed for downstream tasks (like reasoning or tracing), returning them prevents the use of optimized kernels like FlashAttention and unnecessarily allocates memory.
+**Action:** When using `nn.MultiheadAttention` and the attention weights are explicitly discarded or not needed, always set `need_weights=False` in the forward call to enable FlashAttention and save memory, unless the weights are explicitly unpacked and used downstream (e.g., in reasoning engines).
