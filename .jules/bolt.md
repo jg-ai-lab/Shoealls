@@ -1,0 +1,3 @@
+## 2026-10-25 - Optimize MultiheadAttention in Fusion
+**Learning:** PyTorch's `nn.MultiheadAttention` by default computes and returns attention weights. In models like `CrossModalAttentionFusion`, if these weights are not needed downstream and are simply discarded using `_`, this results in unnecessary memory allocation and computation, and prevents the use of FlashAttention optimizations.
+**Action:** When using `nn.MultiheadAttention` and the attention weights are not needed, always pass `need_weights=False` to the forward pass to save memory and potentially enable FlashAttention. Be careful not to do this if the weights are actually used elsewhere.
