@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Python 의존성 캐시 레이어
 COPY requirements.txt .
-RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
+RUN pip install --no-cache-dir --prefix=/install -r requirements.txt && pip install --no-cache-dir --prefix=/install "numpy>=1.26.4,<2" "scipy<1.14.0" "contourpy<1.4.0" "pandas<2.2.0"
 
 # ── 런타임 스테이지 ──────────────────────────────────────────────────
 FROM python:3.11-slim
@@ -40,7 +40,7 @@ ENV PYTHONPATH=/app \
 
 EXPOSE 8000
 
-HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
+HEALTHCHECK --interval=30s --timeout=30s --start-period=60s --retries=5 \
     CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"
 
 CMD ["sh", "-c", "uvicorn api.main:app --host 0.0.0.0 --port 8000 --workers ${WORKERS}"]
