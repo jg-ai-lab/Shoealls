@@ -10,8 +10,8 @@ Chain-of-Reasoning 아키텍처:
 """
 
 import torch
-import torch.nn as nn
 import torch.nn.functional as F
+from torch import nn
 
 
 class AnomalyDetectionModule(nn.Module):
@@ -127,13 +127,13 @@ class CrossModalEvidenceCollector(nn.Module):
             cross_support: (B, 3) 교차 검증 지지도
         """
         B = modality_features[0].size(0)
-        D = modality_features[0].size(2)
+        _D = modality_features[0].size(2)
 
         # 모달리티별 요약
         summaries = torch.stack([f.mean(dim=1) for f in modality_features], dim=1)  # (B, 3, D)
 
         # 교차 검증: 각 모달리티가 다른 모달리티를 참조
-        cross_out, cross_attn_weights = self.cross_verify(
+        cross_out, _cross_attn_weights = self.cross_verify(
             summaries, summaries, summaries
         )
         cross_out = self.norm(summaries + cross_out)  # (B, 3, D)
@@ -221,7 +221,7 @@ class DifferentialDiagnosisChain(nn.Module):
             pro_scores: (B, num_classes) 찬성 근거 강도
             con_scores: (B, num_classes) 반대 근거 강도
         """
-        B = evidence_embedding.size(0)
+        _B = evidence_embedding.size(0)
 
         # 초기 가설: 프로토타입과의 유사도
         similarity = F.cosine_similarity(
@@ -381,14 +381,19 @@ class GaitReasoningEngine(nn.Module):
         report = engine.explain(result)  # 한글 추론 리포트 생성
     """
 
-    ANOMALY_NAMES_KR = [
+    ANOMALY_NAMES_KR: tuple[str, ...] = (
         "좌우 비대칭", "리듬 불규칙", "진폭 이상", "주파수 이상",
         "공간 패턴 이상", "시간 지연", "떨림", "보행 동결",
-    ]
+    )
 
-    CLASS_NAMES_KR = ["정상 보행", "절뚝거림", "운동실조", "파킨슨"]
+    CLASS_NAMES_KR: tuple[str, ...] = ("정상 보행", "절뚝거림", "운동실조", "파킨슨")
 
-    MODALITY_NAMES_KR = ["IMU (관성센서)", "족저압 센서", "스켈레톤"]
+    def _get_class_name(self, idx: int) -> str:
+        if idx < len(self.CLASS_NAMES_KR):
+            return self.CLASS_NAMES_KR[idx]
+        return f"알수없음_{idx}"
+
+    MODALITY_NAMES_KR: tuple[str, ...] = ("IMU (관성센서)", "족저압 센서", "스켈레톤")
 
     def __init__(self, config: dict):
         super().__init__()
@@ -516,7 +521,7 @@ class GaitReasoningEngine(nn.Module):
 
         # ── 최종 판정 ──
         lines.append("")
-        lines.append(f"  최종 판정: {self.CLASS_NAMES_KR[pred]}")
+        lines.append(f"  최종 판정: {self._get_class_name(pred)}")
         lines.append(f"  확신도:    {probs[pred]:.1%}")
         lines.append(f"  불확실성:  {uncertainty:.1%}")
         lines.append("")
@@ -578,7 +583,7 @@ class GaitReasoningEngine(nn.Module):
             label = "초기 가설" if step_idx == 0 else f"추론 {step_idx}단계"
             lines.append(
                 f"  {label}: "
-                f"{self.CLASS_NAMES_KR[top_cls]} ({step_probs[top_cls]:.0%})"
+                f"{self._get_class_name(top_cls)} ({step_probs[top_cls]:.0%})"
             )
 
         lines.append("")
@@ -587,7 +592,7 @@ class GaitReasoningEngine(nn.Module):
         for cls_idx in ranked:
             marker = ">>" if cls_idx == pred else "  "
             lines.append(
-                f"  {marker} {self.CLASS_NAMES_KR[cls_idx]:10s} "
+                f"  {marker} {self._get_class_name(cls_idx):10s} "
                 f"확률 {probs[cls_idx]:5.1%} | "
                 f"찬성 {pro[cls_idx]:.0%} | "
                 f"반대 {con[cls_idx]:.0%}"
@@ -615,7 +620,7 @@ class GaitReasoningEngine(nn.Module):
             curr_top = F.softmax(trace[s][i], dim=-1).argmax().item()
             if prev_top != curr_top:
                 changes.append(
-                    f"  단계{s}: {self.CLASS_NAMES_KR[prev_top]} → {self.CLASS_NAMES_KR[curr_top]}"
+                    f"  단계{s}: {self._get_class_name(prev_top)} → {self._get_class_name(curr_top)}"
                 )
 
         if changes:
