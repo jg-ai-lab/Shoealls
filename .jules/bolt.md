@@ -1,0 +1,3 @@
+## 2026-11-04 - [Enable FlashAttention in MultiheadAttention]
+**Learning:** Setting `need_weights=False` in PyTorch's `nn.MultiheadAttention` prevents unnecessary computation and memory allocation when attention weights are discarded, enabling FlashAttention. However, this returns `None` for weights, which breaks downstream trace/reasoning components if they are explicitly unpacked and used.
+**Action:** Always check if attention weights are unpacked and used downstream before setting `need_weights=False`. Apply this optimization in fusion layers where weights are genuinely discarded, naming the target `_` with an explanatory comment.
