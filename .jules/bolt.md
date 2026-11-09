@@ -1,0 +1,3 @@
+## 2026-11-09 - Enable FlashAttention in PyTorch MultiheadAttention
+**Learning:** PyTorch `nn.MultiheadAttention` allocates memory and computes attention weights by default. When the attention weights are not needed for downstream tasks (indicated by an unused second return value `_`), passing `need_weights=False` avoids this allocation, which can significantly speed up training and inference by enabling FlashAttention optimizations on supported hardware.
+**Action:** Always verify if attention weights are used after calling `nn.MultiheadAttention`. If discarded, set `need_weights=False` to optimize memory and computation.
