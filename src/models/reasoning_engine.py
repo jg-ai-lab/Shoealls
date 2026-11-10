@@ -127,7 +127,7 @@ class CrossModalEvidenceCollector(nn.Module):
             cross_support: (B, 3) 교차 검증 지지도
         """
         B = modality_features[0].size(0)
-        D = modality_features[0].size(2)
+        modality_features[0].size(2)
 
         # 모달리티별 요약
         summaries = torch.stack([f.mean(dim=1) for f in modality_features], dim=1)  # (B, 3, D)
@@ -221,7 +221,7 @@ class DifferentialDiagnosisChain(nn.Module):
             pro_scores: (B, num_classes) 찬성 근거 강도
             con_scores: (B, num_classes) 반대 근거 강도
         """
-        B = evidence_embedding.size(0)
+        evidence_embedding.size(0)
 
         # 초기 가설: 프로토타입과의 유사도
         similarity = F.cosine_similarity(
@@ -516,7 +516,9 @@ class GaitReasoningEngine(nn.Module):
 
         # ── 최종 판정 ──
         lines.append("")
-        lines.append(f"  최종 판정: {(self.CLASS_NAMES_KR[pred] if pred < len(self.CLASS_NAMES_KR) else f"알수없음_{pred}")}")
+        kr_name = self.CLASS_NAMES_KR[pred] if pred < len(self.CLASS_NAMES_KR) else f"알수없음_{pred}"
+        lines.append(f"  최종 판정: {kr_name}")
+
         lines.append(f"  확신도:    {probs[pred]:.1%}")
         lines.append(f"  불확실성:  {uncertainty:.1%}")
         lines.append("")
@@ -614,9 +616,9 @@ class GaitReasoningEngine(nn.Module):
             prev_top = F.softmax(trace[s-1][i], dim=-1).argmax().item()
             curr_top = F.softmax(trace[s][i], dim=-1).argmax().item()
             if prev_top != curr_top:
-                changes.append(
-                    f"  단계{s}: {(self.CLASS_NAMES_KR[prev_top] if prev_top < len(self.CLASS_NAMES_KR) else f"알수없음_{prev_top}")} → {(self.CLASS_NAMES_KR[curr_top] if curr_top < len(self.CLASS_NAMES_KR) else f"알수없음_{curr_top}")}"
-                )
+                prev_name = self.CLASS_NAMES_KR[prev_top] if prev_top < len(self.CLASS_NAMES_KR) else f"알수없음_{prev_top}"
+                curr_name = self.CLASS_NAMES_KR[curr_top] if curr_top < len(self.CLASS_NAMES_KR) else f"알수없음_{curr_top}"
+                changes.append(f"  단계{s}: {prev_name} → {curr_name}")
 
         if changes:
             lines.append("  추론 과정 중 가설 변경:")

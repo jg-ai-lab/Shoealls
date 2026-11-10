@@ -1,3 +1,14 @@
+from __future__ import annotations
+import os
+import sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import importlib
+from fastapi.testclient import TestClient
+from api.examples import generate_sample_sensor_data
+from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import MagicMock, patch
+import pytest
 """Tests for authentication and sync utility functions.
 
 Covers pure-logic functions and mocked external-service auth flows in:
@@ -5,14 +16,8 @@ Covers pure-logic functions and mocked external-service auth flows in:
   - scripts/download_weargait.py
 """
 
-from __future__ import annotations
 
-import sys
-from pathlib import Path
-from types import SimpleNamespace
-from unittest.mock import MagicMock, patch
 
-import pytest
 
 # ---------------------------------------------------------------------------
 # Helpers to import the scripts without triggering their __main__ blocks
@@ -20,7 +25,6 @@ import pytest
 
 def _import_sync():
     """Import sync_weargait_to_gdrive without side effects."""
-    import importlib
     import types
 
     # Stub heavy third-party modules so we can import without them installed
@@ -742,12 +746,7 @@ class TestDownloadSynapseAuth:
 
 API_KEYS 환경변수를 통한 API 키 인증 동작을 검증합니다.
 """
-import importlib
-import os
-from fastapi.testclient import TestClient
-from api.examples import generate_sample_sensor_data
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 def _classify_body():
